@@ -154,8 +154,7 @@ export class NotificacionesService {
 }
 
   /** Crea una notificación (admin). */
-/** Crea una notificación (admin). */
-async crear(input: NotificacionInput): Promise<NotificacionApi | null> {
+  async crear(input: NotificacionInput, userIds: number[] = []): Promise<NotificacionApi | null> {
 
   const cuerpo = {
     name: input.name,
@@ -166,6 +165,7 @@ async crear(input: NotificacionInput): Promise<NotificacionApi | null> {
     reminderMinutes: input.reminderMinutes,
     isActive: input.isActive,
     days: input.days,
+    userIds: userIds,
   };
 
   console.log(

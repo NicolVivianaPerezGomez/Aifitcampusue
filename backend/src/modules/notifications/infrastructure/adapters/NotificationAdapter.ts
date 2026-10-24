@@ -43,7 +43,7 @@ export class NotificationAdapter {
   }
 
   // 2. Método para crear
-  async create( notification: Omit<Notification, "id">,days: number[]): 
+  async create( notification: Omit<Notification, "id">,days: number[], userIds: number[] = []): 
   Promise<Notification> { // Al terminar devuelve notificación
 
     // Entidad vacia
@@ -72,6 +72,15 @@ export class NotificationAdapter {
       // Guarda el dia en la bd
       await this.dayRepo.save(dayEntity);
     }
+
+    // Asigna la notificación a los usuarios seleccionados
+    for (const userId of userIds) {
+      const userNotification = new UserNotificationModel();
+      userNotification.userId = userId;
+      userNotification.notificationId = saved.id;
+      await this.userNotificationRepo.save(userNotification);
+    }
+
     // Convierte toDomain en el formato de notificación
     return this.toDomain(
       saved,

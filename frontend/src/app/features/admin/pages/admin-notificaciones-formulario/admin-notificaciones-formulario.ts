@@ -22,6 +22,12 @@ import {
   NotificacionesService
 } from '../../../../core/services/notificaciones.service';
 
+import {
+  UsuariosService,
+  UsuarioAdmin,
+  ESTADO_ACTIVO
+} from '../../../../core/services/usuarios.service';
+
 
 @Component({
   imports: [
@@ -48,6 +54,10 @@ export class AdminNotificacionesFormulario
   private readonly notificacionesService =
     inject(NotificacionesService);
 
+  // Servicio para obtener la lista de usuarios.
+  private readonly usuariosService =
+    inject(UsuariosService);
+
 
   // Nos permite saber si estamos editando.
   private readonly route =
@@ -63,6 +73,14 @@ export class AdminNotificacionesFormulario
   // Lista de rutinas que aparecerán
   // en el select.
   rutinas: Rutina[] = [];
+
+  // Lista de usuarios activos que pueden
+  // recibir la notificación.
+  usuarios: UsuarioAdmin[] = [];
+
+  // IDs de los usuarios seleccionados
+  // para recibir la notificación.
+  usuariosSeleccionados: number[] = [];
 
 
   // Rutina que el usuario seleccionó.
@@ -90,6 +108,8 @@ export class AdminNotificacionesFormulario
     // Primero cargamos las rutinas.
     await this.cargarRutinas();
 
+    // Cargamos la lista de usuarios activos.
+    await this.cargarUsuarios();
 
     // Revisamos si la URL tiene un ID.
     const id =
@@ -148,6 +168,49 @@ export class AdminNotificacionesFormulario
     }
   }
 
+
+
+  // ==========================================
+  // CARGAR USUARIOS
+  // ==========================================
+
+  private async cargarUsuarios(): Promise<void> {
+
+    try {
+
+      // Pedimos todos los usuarios al backend.
+      const todos =
+        await this.usuariosService.listar();
+
+
+      // Solamente dejamos los que están activos.
+      this.usuarios = todos.filter(
+        (u) => u.statusId === ESTADO_ACTIVO
+      );
+
+
+      console.log(
+        'Usuarios activos cargados:',
+        this.usuarios
+      );
+
+
+      // Le avisamos a Angular que debe
+      // actualizar la pantalla.
+      this.changeDetectorRef.detectChanges();
+
+
+    } catch (error) {
+
+      console.error(
+        'Error al cargar usuarios:',
+        error
+      );
+
+
+      this.usuarios = [];
+    }
+  }
 
 
   // ==========================================
@@ -439,6 +502,40 @@ export class AdminNotificacionesFormulario
 
 
   // ==========================================
+  // SELECCIONAR USUARIOS
+  // ==========================================
+
+  seleccionarTodos(event: Event): void {
+    const checkbox = event.target as HTMLInputElement;
+
+    if (checkbox.checked) {
+      // Selecciona todos los usuarios activos.
+      this.usuariosSeleccionados = this.usuarios.map(u => u.id);
+    } else {
+      // Deselecciona todos.
+      this.usuariosSeleccionados = [];
+    }
+
+    // Actualiza la vista.
+    this.changeDetectorRef.detectChanges();
+  }
+
+  alternarUsuario(userId: number): void {
+    const index = this.usuariosSeleccionados.indexOf(userId);
+
+    if (index >= 0) {
+      // Si ya está seleccionado, lo quitamos.
+      this.usuariosSeleccionados.splice(index, 1);
+    } else {
+      // Si no está seleccionado, lo agregamos.
+      this.usuariosSeleccionados.push(userId);
+    }
+
+    // Actualiza la vista.
+    this.changeDetectorRef.detectChanges();
+  }
+
+  // ==========================================
   // GUARDAR
   // ==========================================
 
@@ -653,7 +750,8 @@ export class AdminNotificacionesFormulario
 
       resultado =
         await this.notificacionesService.crear(
-          datos
+          datos,
+          this.usuariosSeleccionados
         );
 
 

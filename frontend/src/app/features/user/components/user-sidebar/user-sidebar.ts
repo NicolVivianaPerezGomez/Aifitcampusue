@@ -25,6 +25,7 @@ export class UserSidebar {
     { path: 'ejercicios', icon: 'self_improvement', label: 'Ejercicios' },
     { path: 'mis-pausas', icon: 'schedule', label: 'Mis pausas' },
     { path: 'dashboard', icon: 'dashboard', label: 'Dashboard' },
+    { path: 'notificaciones', icon: 'notifications', label: 'Notificaciones' },
   ]);
 
   collapsed = input.required<boolean>();

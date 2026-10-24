@@ -355,6 +355,42 @@
 
           </label>
 
+          <!-- destinatarios -->
+          <p class="etiqueta">
+            Destinatarios
+          </p>
+
+          <section class="destinatarios">
+
+            <label class="todos">
+              <input
+                type="checkbox"
+                [checked]="usuariosSeleccionados.length === usuarios.length"
+                (change)="seleccionarTodos($event)"
+              />
+              <span>
+                Seleccionar todos los usuarios activos
+              </span>
+            </label>
+
+            <div class="lista-usuarios">
+              @for (usuario of usuarios; track usuario.id) {
+                <label class="usuario">
+                  <input
+                    type="checkbox"
+                    [checked]="usuariosSeleccionados.includes(usuario.id)"
+                    (change)="alternarUsuario(usuario.id)"
+                  />
+                  <span>
+                    {{ usuario.firstName }} {{ usuario.lastName }}
+                    ({{ usuario.email }})
+                  </span>
+                </label>
+              }
+            </div>
+
+          </section>
+
         </section>
 
       </section>

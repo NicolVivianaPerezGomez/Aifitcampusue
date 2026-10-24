@@ -31,6 +31,7 @@ export class NotificationController {
         reminderMinutes,
         isActive,
         days,
+        userIds,
       } = req.body ?? {};
 
       // Muestra los datos de la notificación en consola.
@@ -57,6 +58,7 @@ export class NotificationController {
           isActive,
         },
         days,
+        userIds ?? [],
       );
 
       // Devuelve código 201 indicando que fue creada.

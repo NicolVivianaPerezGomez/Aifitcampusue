@@ -15,9 +15,11 @@ export class NotificationService {
     // Recibo la notificación
     notification: Omit<Notification, "id" | "days">,
     days: number[],
+    userIds: number[] = [],
   ): Promise<Notification> { // Devolvera una notificación cuando termine
     console.log("Notificación creada:", notification);
     console.log("Días seleccionados:", days);
+    console.log("Usuarios asignados:", userIds);
     // Espera que notificationPort cree la notificación
     return await this.notificationPort.create(
       {
@@ -27,6 +29,7 @@ export class NotificationService {
       },
       // Se pasan aparte como los días que recibimos en el método
       days,
+      userIds,
     );
   }
 

@@ -27,6 +27,10 @@ export const USER_ROUTES: Routes = [
         path: 'dashboard',
         loadComponent: () => import('./pages/dashboard/dashboard').then((m) => m.Dashboard),
       },
+      {
+        path: 'notificaciones',
+        loadComponent: () => import('./pages/notificaciones/notificaciones').then((m) => m.Notificaciones),
+      },
       /* Compatibilidad */
       { path: 'reproducir', redirectTo: 'inicio', pathMatch: 'full' },
       { path: 'historial', redirectTo: 'mis-pausas', pathMatch: 'full' },
