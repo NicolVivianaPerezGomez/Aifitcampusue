@@ -1,0 +1,76 @@
+<section class="ejercicios-page">
+  <header class="ejercicios-page__cabecera">
+    <div>
+      <p class="tipo-eyebrow">Mi rutina</p>
+      <h1 class="tipo-titulo tipo-titulo--sans">{{ rutina()?.name || 'Tu rutina' }}</h1>
+      <p class="tipo-lead">
+        {{ rutina()?.description || 'La rutina que el administrador configuró para tus pausas activas.' }}
+      </p>
+      @if (rutina(); as r) {
+        <div class="rutina-meta">
+          @if (r.routineType?.name) {
+            <span>{{ r.routineType?.name }}</span>
+          }
+          <span>{{ pasos().length }} ejercicios</span>
+          @if (r.totalDurationSeconds) {
+            <span>{{ formatear(r.totalDurationSeconds ?? 0) }}</span>
+          }
+        </div>
+      }
+    </div>
+    @if (pasos().length > 0) {
+      <button type="button" class="btn-rutina" (click)="iniciar()">Iniciar rutina</button>
+    }
+  </header>
+
+  @if (cargando()) {
+    <p class="tipo-lead vacio">Cargando la rutina...</p>
+  } @else if (pasos().length === 0) {
+    <p class="tipo-lead vacio">
+      El administrador aún no ha activado una rutina. Cuando lo haga, sus ejercicios aparecerán aquí.
+    </p>
+  } @else {
+    <div class="ejercicios-grid">
+      @for (paso of pasos(); track paso.clave; let i = $index) {
+        <article class="card-ej">
+          <div class="card-ej__media">
+            @if (paso.tipoRecurso === 'video' && paso.urlRecurso) {
+              <video [src]="paso.urlRecurso" muted playsinline preload="metadata"></video>
+            } @else if (paso.tipoRecurso === 'image' && paso.urlRecurso) {
+              <img [src]="paso.urlRecurso" [alt]="paso.nombre" />
+            } @else {
+              <div class="card-ej__placeholder">{{ paso.nombre }}</div>
+            }
+            <span class="card-ej__orden">{{ i + 1 }}</span>
+            <span class="card-ej__duracion">{{ formatear(paso.duracionSegundos) }}</span>
+          </div>
+          <div class="card-ej__cuerpo">
+            <div class="card-ej__meta">
+              <em>{{ paso.categoria }}</em>
+              <span>{{ paso.series }} series</span>
+            </div>
+            <h2>{{ paso.nombre }}</h2>
+            <p>{{ paso.descripcion || 'Sin descripción.' }}</p>
+            <div class="card-ej__acciones">
+              <small>
+                @if (paso.repeticiones) {
+                  {{ paso.repeticiones }} reps
+                }
+                @if (paso.repeticiones && paso.descanso) {
+                  ·
+                }
+                @if (paso.descanso) {
+                  {{ paso.descanso }} s descanso
+                }
+                @if (!paso.repeticiones && !paso.descanso) {
+                  Paso {{ i + 1 }} de {{ pasos().length }}
+                }
+              </small>
+              <button type="button" (click)="iniciar()">Iniciar</button>
+            </div>
+          </div>
+        </article>
+      }
+    </div>
+  }
+</section>
